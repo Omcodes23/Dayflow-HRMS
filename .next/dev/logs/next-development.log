@@ -40,3 +40,7 @@ https://react.dev/link/hydration-mismatch
             ...
           ...
 
+[00:07:16.308] Server  LOG     ✓ Compiled in 593ms
+[00:08:04.611] Server  LOG     ✓ Compiled in 911ms
+[00:10:19.868] Server  ERROR   User fetch error: {}
+[00:10:37.176] Server  ERROR   User fetch error: {}
