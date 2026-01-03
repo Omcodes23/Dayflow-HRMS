@@ -1,0 +1,358 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// ENUMS
+// ============================================
+
+enum UserRole {
+  EMPLOYEE
+  MANAGER
+  HR
+  ADMIN
+}
+
+enum AccountStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  PENDING_VERIFICATION
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERN
+}
+
+enum EmploymentStatus {
+  ACTIVE
+  ON_LEAVE
+  TERMINATED
+  RESIGNED
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  HALF_DAY
+  LEAVE
+  HOLIDAY
+  WEEKEND
+}
+
+enum LeaveType {
+  PAID
+  SICK
+  UNPAID
+  CASUAL
+  MATERNITY
+  PATERNITY
+}
+
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum NotificationType {
+  LEAVE_APPROVED
+  LEAVE_REJECTED
+  ATTENDANCE_ALERT
+  PAYROLL_GENERATED
+  PROFILE_UPDATED
+  SYSTEM_ALERT
+}
+
+// ============================================
+// USERS & AUTHENTICATION
+// ============================================
+
+model User {
+  id                       String        @id @default(uuid()) @map("user_id")
+  employeeId               String        @unique @map("employee_id")
+  email                    String        @unique
+  passwordHash             String        @map("password_hash")
+  role                     UserRole      @default(EMPLOYEE)
+  accountStatus            AccountStatus @default(PENDING_VERIFICATION) @map("account_status")
+  emailVerified            Boolean       @default(false) @map("email_verified")
+  emailVerificationToken   String?       @map("email_verification_token")
+  emailVerificationExpires DateTime?     @map("email_verification_expires")
+  passwordResetToken       String?       @map("password_reset_token")
+  passwordResetExpires     DateTime?     @map("password_reset_expires")
+  lastLogin                DateTime?     @map("last_login")
+  failedLoginAttempts      Int           @default(0) @map("failed_login_attempts")
+  lockedUntil              DateTime?     @map("locked_until")
+  createdAt                DateTime      @default(now()) @map("created_at")
+  updatedAt                DateTime      @updatedAt @map("updated_at")
+  deletedAt                DateTime?     @map("deleted_at")
+
+  // Relations
+  employee                 Employee?
+  refreshTokens            RefreshToken[]
+  notifications            Notification[]
+  approvedAttendances      Attendance[]   @relation("ApprovedBy")
+  reviewedLeaves           LeaveRequest[] @relation("ReviewedBy")
+  createdEmployees         Employee[]     @relation("CreatedBy")
+  updatedEmployees         Employee[]     @relation("UpdatedBy")
+
+  @@index([email])
+  @@index([employeeId])
+  @@index([role])
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String    @id @default(uuid()) @map("token_id")
+  userId    String    @map("user_id")
+  token     String    @unique
+  expiresAt DateTime  @map("expires_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  revokedAt DateTime? @map("revoked_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+// ============================================
+// DEPARTMENTS & DESIGNATIONS
+// ============================================
+
+model Department {
+  id             String   @id @default(uuid()) @map("department_id")
+  departmentName String   @unique @map("department_name")
+  departmentCode String   @unique @map("department_code")
+  description    String?
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  employees Employee[]
+
+  @@map("departments")
+}
+
+model Designation {
+  id              String   @id @default(uuid()) @map("designation_id")
+  designationName String   @map("designation_name")
+  level           Int?
+  description     String?
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  // Relations
+  employees Employee[]
+
+  @@map("designations")
+}
+
+// ============================================
+// EMPLOYEE PROFILES
+// ============================================
+
+model Employee {
+  id                    String           @id @map("employee_id")
+  firstName             String           @map("first_name")
+  lastName              String           @map("last_name")
+  middleName            String?          @map("middle_name")
+  dateOfBirth           DateTime?        @map("date_of_birth") @db.Date
+  gender                String?
+  phone                 String?
+  emergencyContactName  String?          @map("emergency_contact_name")
+  emergencyContactPhone String?          @map("emergency_contact_phone")
+  addressLine1          String?          @map("address_line1")
+  addressLine2          String?          @map("address_line2")
+  city                  String?
+  state                 String?
+  country               String?
+  postalCode            String?          @map("postal_code")
+  departmentId          String?          @map("department_id")
+  designationId         String?          @map("designation_id")
+  reportingManagerId    String?          @map("reporting_manager_id")
+  employmentType        EmploymentType   @default(FULL_TIME) @map("employment_type")
+  employmentStatus      EmploymentStatus @default(ACTIVE) @map("employment_status")
+  joinDate              DateTime         @map("join_date") @db.Date
+  confirmationDate      DateTime?        @map("confirmation_date") @db.Date
+  resignationDate       DateTime?        @map("resignation_date") @db.Date
+  terminationDate       DateTime?        @map("termination_date") @db.Date
+  profilePictureUrl     String?          @map("profile_picture_url")
+  bio                   String?
+  createdAt             DateTime         @default(now()) @map("created_at")
+  updatedAt             DateTime         @updatedAt @map("updated_at")
+  createdById           String?          @map("created_by")
+  updatedById           String?          @map("updated_by")
+
+  // Relations
+  user              User            @relation(fields: [id], references: [id], onDelete: Cascade)
+  department        Department?     @relation(fields: [departmentId], references: [id])
+  designation       Designation?    @relation(fields: [designationId], references: [id])
+  reportingManager  Employee?       @relation("ManagerToEmployee", fields: [reportingManagerId], references: [id])
+  subordinates      Employee[]      @relation("ManagerToEmployee")
+  createdBy         User?           @relation("CreatedBy", fields: [createdById], references: [id])
+  updatedBy         User?           @relation("UpdatedBy", fields: [updatedById], references: [id])
+  attendances       Attendance[]
+  leaveRequests     LeaveRequest[]
+  leaveBalances     LeaveBalance[]
+  salaryStructures  SalaryStructure[]
+
+  @@index([departmentId])
+  @@index([reportingManagerId])
+  @@index([employmentStatus])
+  @@map("employees")
+}
+
+// ============================================
+// ATTENDANCE MANAGEMENT
+// ============================================
+
+model Attendance {
+  id            String           @id @default(uuid()) @map("attendance_id")
+  employeeId    String           @map("employee_id")
+  date          DateTime         @db.Date
+  checkIn       DateTime?        @map("check_in")
+  checkOut      DateTime?        @map("check_out")
+  status        AttendanceStatus @default(ABSENT)
+  workHours     Float?           @map("work_hours")
+  overtimeHours Float?           @map("overtime_hours")
+  notes         String?
+  location      String?
+  ipAddress     String?          @map("ip_address")
+  approvedById  String?          @map("approved_by")
+  approvedAt    DateTime?        @map("approved_at")
+  createdAt     DateTime         @default(now()) @map("created_at")
+  updatedAt     DateTime         @updatedAt @map("updated_at")
+
+  // Relations
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  approvedBy User?    @relation("ApprovedBy", fields: [approvedById], references: [id])
+
+  @@unique([employeeId, date])
+  @@index([employeeId])
+  @@index([date(sort: Desc)])
+  @@map("attendance")
+}
+
+// ============================================
+// LEAVE MANAGEMENT
+// ============================================
+
+model LeavePolicy {
+  id                    String    @id @default(uuid()) @map("policy_id")
+  leaveType             LeaveType @unique @map("leave_type")
+  annualQuota           Int       @map("annual_quota")
+  carryForwardAllowed   Boolean   @default(false) @map("carry_forward_allowed")
+  maxCarryForward       Int       @default(0) @map("max_carry_forward")
+  requiresDocumentation Boolean   @default(false) @map("requires_documentation")
+  minNoticeDays         Int       @default(0) @map("min_notice_days")
+  description           String?
+  createdAt             DateTime  @default(now()) @map("created_at")
+
+  @@map("leave_policies")
+}
+
+model LeaveBalance {
+  id             String    @id @default(uuid()) @map("balance_id")
+  employeeId     String    @map("employee_id")
+  leaveType      LeaveType @map("leave_type")
+  year           Int
+  totalAllocated Float     @map("total_allocated")
+  used           Float     @default(0)
+  remaining      Float
+  carriedForward Float     @default(0) @map("carried_forward")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@unique([employeeId, leaveType, year])
+  @@index([employeeId])
+  @@map("leave_balances")
+}
+
+model LeaveRequest {
+  id               String      @id @default(uuid()) @map("request_id")
+  employeeId       String      @map("employee_id")
+  leaveType        LeaveType   @map("leave_type")
+  startDate        DateTime    @map("start_date") @db.Date
+  endDate          DateTime    @map("end_date") @db.Date
+  daysRequested    Float       @map("days_requested")
+  reason           String
+  status           LeaveStatus @default(PENDING)
+  reviewedById     String?     @map("reviewed_by")
+  reviewedAt       DateTime?   @map("reviewed_at")
+  reviewerComments String?     @map("reviewer_comments")
+  attachmentUrl    String?     @map("attachment_url")
+  createdAt        DateTime    @default(now()) @map("created_at")
+  updatedAt        DateTime    @updatedAt @map("updated_at")
+
+  // Relations
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  reviewedBy User?    @relation("ReviewedBy", fields: [reviewedById], references: [id])
+
+  @@index([employeeId])
+  @@index([status])
+  @@map("leave_requests")
+}
+
+// ============================================
+// PAYROLL MANAGEMENT
+// ============================================
+
+model SalaryStructure {
+  id                 String   @id @default(uuid()) @map("structure_id")
+  employeeId         String   @map("employee_id")
+  basicSalary        Float    @map("basic_salary")
+  hra                Float    @default(0)
+  transportAllowance Float    @default(0) @map("transport_allowance")
+  medicalAllowance   Float    @default(0) @map("medical_allowance")
+  specialAllowance   Float    @default(0) @map("special_allowance")
+  providentFund      Float    @default(0) @map("provident_fund")
+  professionalTax    Float    @default(0) @map("professional_tax")
+  incomeTax          Float    @default(0) @map("income_tax")
+  currency           String   @default("USD")
+  effectiveFrom      DateTime @map("effective_from") @db.Date
+  effectiveTo        DateTime? @map("effective_to") @db.Date
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([employeeId])
+  @@map("salary_structures")
+}
+
+// ============================================
+// NOTIFICATIONS
+// ============================================
+
+model Notification {
+  id        String           @id @default(uuid()) @map("notification_id")
+  userId    String           @map("user_id")
+  type      NotificationType
+  title     String
+  message   String
+  link      String?
+  isRead    Boolean          @default(false) @map("is_read")
+  createdAt DateTime         @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@map("notifications")
+}
