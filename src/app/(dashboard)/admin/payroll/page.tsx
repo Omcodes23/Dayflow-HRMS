@@ -33,9 +33,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { DollarSign, Users, Edit, TrendingUp, Wallet, Search } from 'lucide-react';
+import { IndianRupee, Users, Edit, TrendingUp, Wallet, Search } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
+import { formatINR } from '@/lib/utils/currency';
 
 type Employee = {
   id: string;
@@ -177,8 +178,8 @@ export default function AdminPayrollPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Payroll Management</h1>
-        <p className="text-gray-500">Manage employee salary structures</p>
+        <h1 className="text-2xl font-bold text-foreground">Payroll Management</h1>
+        <p className="text-muted-foreground">Manage employee salary structures</p>
       </div>
 
       {/* Stats */}
@@ -186,11 +187,11 @@ export default function AdminPayrollPage() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
-              <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                <Users className="h-5 w-5 text-blue-600" />
+              <div className="h-10 w-10 rounded-lg bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+                <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">Total Employees</p>
+                <p className="text-sm text-muted-foreground">Total Employees</p>
                 <p className="text-2xl font-bold">{employees?.length || 0}</p>
               </div>
             </div>
@@ -199,11 +200,11 @@ export default function AdminPayrollPage() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
-              <div className="h-10 w-10 rounded-lg bg-green-100 flex items-center justify-center">
-                <Wallet className="h-5 w-5 text-green-600" />
+              <div className="h-10 w-10 rounded-lg bg-green-100 dark:bg-green-900 flex items-center justify-center">
+                <Wallet className="h-5 w-5 text-green-600 dark:text-green-400" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">With Salary</p>
+                <p className="text-sm text-muted-foreground">With Salary</p>
                 <p className="text-2xl font-bold">{employeesWithSalary}</p>
               </div>
             </div>
@@ -212,11 +213,11 @@ export default function AdminPayrollPage() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
-              <div className="h-10 w-10 rounded-lg bg-yellow-100 flex items-center justify-center">
-                <DollarSign className="h-5 w-5 text-yellow-600" />
+              <div className="h-10 w-10 rounded-lg bg-yellow-100 dark:bg-yellow-900 flex items-center justify-center">
+                <IndianRupee className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">Pending Setup</p>
+                <p className="text-sm text-muted-foreground">Pending Setup</p>
                 <p className="text-2xl font-bold">
                   {(employees?.length || 0) - employeesWithSalary}
                 </p>
@@ -227,11 +228,11 @@ export default function AdminPayrollPage() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
-              <div className="h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center">
-                <TrendingUp className="h-5 w-5 text-purple-600" />
+              <div className="h-10 w-10 rounded-lg bg-purple-100 dark:bg-purple-900 flex items-center justify-center">
+                <TrendingUp className="h-5 w-5 text-purple-600 dark:text-purple-400" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">Monthly Payroll</p>
+                <p className="text-sm text-muted-foreground">Monthly Payroll</p>
                 <p className="text-xl font-bold">{formatCurrency(totalPayroll)}</p>
               </div>
             </div>
@@ -243,7 +244,7 @@ export default function AdminPayrollPage() {
       <Card>
         <CardContent className="pt-6">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search by name, email, or employee ID..."
               value={search}

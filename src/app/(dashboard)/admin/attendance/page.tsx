@@ -24,17 +24,18 @@ import {
 } from '@/components/ui/select';
 import { Calendar, Clock, CheckCircle, XCircle, AlertTriangle, Users } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isWeekend } from 'date-fns';
+import { RoleGuard } from '@/components/auth/RoleGuard';
 
 const statusColors: Record<string, string> = {
-  PRESENT: 'bg-green-100 text-green-700',
-  ABSENT: 'bg-red-100 text-red-700',
-  HALF_DAY: 'bg-yellow-100 text-yellow-700',
-  ON_LEAVE: 'bg-blue-100 text-blue-700',
-  LATE: 'bg-orange-100 text-orange-700',
-  HOLIDAY: 'bg-purple-100 text-purple-700',
+  PRESENT: 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300',
+  ABSENT: 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300',
+  HALF_DAY: 'bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300',
+  ON_LEAVE: 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300',
+  LATE: 'bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300',
+  HOLIDAY: 'bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300',
 };
 
-export default function AdminAttendancePage() {
+function AdminAttendanceContent() {
   const [selectedMonth, setSelectedMonth] = useState(format(new Date(), 'yyyy-MM'));
 
   const { data: employees, isLoading: employeesLoading } = trpc.employee.getAll.useQuery();
@@ -61,8 +62,8 @@ export default function AdminAttendancePage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Attendance Report</h1>
-          <p className="text-gray-500">Monitor employee attendance across the organization</p>
+          <h1 className="text-2xl font-bold text-foreground">Attendance Report</h1>
+          <p className="text-muted-foreground">Monitor employee attendance across the organization</p>
         </div>
         <Select value={selectedMonth} onValueChange={setSelectedMonth}>
           <SelectTrigger className="w-48">
@@ -255,5 +256,13 @@ export default function AdminAttendancePage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function AdminAttendancePage() {
+  return (
+    <RoleGuard allowedRoles={['ADMIN', 'HR']}>
+      <AdminAttendanceContent />
+    </RoleGuard>
   );
 }

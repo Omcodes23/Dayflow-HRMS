@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { trpc } from '@/lib/trpc';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { RoleGuard } from '@/components/auth/RoleGuard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -38,20 +39,20 @@ import { toast } from 'sonner';
 import { format } from 'date-fns';
 
 const statusColors: Record<string, string> = {
-  ACTIVE: 'bg-green-100 text-green-700',
-  ON_LEAVE: 'bg-yellow-100 text-yellow-700',
-  TERMINATED: 'bg-red-100 text-red-700',
-  RESIGNED: 'bg-gray-100 text-gray-700',
+  ACTIVE: 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300',
+  ON_LEAVE: 'bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300',
+  TERMINATED: 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300',
+  RESIGNED: 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300',
 };
 
 const roleColors: Record<string, string> = {
-  ADMIN: 'bg-purple-100 text-purple-700',
-  HR: 'bg-blue-100 text-blue-700',
-  MANAGER: 'bg-indigo-100 text-indigo-700',
-  EMPLOYEE: 'bg-gray-100 text-gray-700',
+  ADMIN: 'bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300',
+  HR: 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300',
+  MANAGER: 'bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300',
+  EMPLOYEE: 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300',
 };
 
-export default function AdminEmployeesPage() {
+function AdminEmployeesContent() {
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [formData, setFormData] = useState({
@@ -453,5 +454,13 @@ export default function AdminEmployeesPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function AdminEmployeesPage() {
+  return (
+    <RoleGuard allowedRoles={['ADMIN', 'HR']}>
+      <AdminEmployeesContent />
+    </RoleGuard>
   );
 }

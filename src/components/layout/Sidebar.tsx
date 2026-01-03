@@ -9,13 +9,15 @@ import {
   User,
   Clock,
   CalendarDays,
-  DollarSign,
+  IndianRupee,
   Users,
   ClipboardCheck,
   FileText,
   Settings,
   ChevronLeft,
   ChevronRight,
+  BarChart3,
+  X,
 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -25,17 +27,23 @@ const employeeNavItems = [
   { href: '/profile', label: 'My Profile', icon: User },
   { href: '/attendance', label: 'Attendance', icon: Clock },
   { href: '/leaves', label: 'Leaves', icon: CalendarDays },
-  { href: '/payroll', label: 'Payroll', icon: DollarSign },
+  { href: '/payroll', label: 'Payroll', icon: IndianRupee },
+  { href: '/settings', label: 'Settings', icon: Settings },
 ];
 
 const adminNavItems = [
   { href: '/admin/employees', label: 'Employees', icon: Users },
   { href: '/admin/leaves', label: 'Leave Approvals', icon: ClipboardCheck },
   { href: '/admin/attendance', label: 'Attendance Report', icon: FileText },
-  { href: '/admin/payroll', label: 'Payroll Management', icon: DollarSign },
+  { href: '/admin/payroll', label: 'Payroll Management', icon: IndianRupee },
+  { href: '/admin/reports', label: 'Reports & Analytics', icon: BarChart3 },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  onClose?: () => void;
+}
+
+export function Sidebar({ onClose }: SidebarProps) {
   const pathname = usePathname();
   const { user } = useAuthStore();
   const [collapsed, setCollapsed] = useState(false);
@@ -45,7 +53,7 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        'fixed left-0 top-0 z-40 h-screen border-r bg-white transition-all duration-300',
+        'fixed left-0 top-0 z-40 h-screen border-r bg-background transition-all duration-300',
         collapsed ? 'w-16' : 'w-64'
       )}
     >
@@ -57,16 +65,26 @@ export function Sidebar() {
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white font-bold">
                 D
               </div>
-              <span className="text-xl font-bold text-gray-900">Dayflow</span>
+              <span className="text-xl font-bold text-foreground">Dayflow</span>
             </Link>
           )}
+          {/* Desktop collapse button */}
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setCollapsed(!collapsed)}
-            className="h-8 w-8"
+            className="h-8 w-8 hidden lg:flex"
           >
             {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+          </Button>
+          {/* Mobile close button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            className="h-8 w-8 lg:hidden"
+          >
+            <X className="h-4 w-4" />
           </Button>
         </div>
 
@@ -74,7 +92,7 @@ export function Sidebar() {
         <nav className="flex-1 space-y-1 p-2 overflow-y-auto">
           {/* Employee section */}
           {!collapsed && (
-            <p className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase">Menu</p>
+            <p className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase">Menu</p>
           )}
           {employeeNavItems.map((item) => {
             const Icon = item.icon;
@@ -83,11 +101,12 @@ export function Sidebar() {
               <Link
                 key={item.href}
                 href={item.href}
+                onClick={() => onClose?.()}
                 className={cn(
                   'flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors',
                   isActive
-                    ? 'bg-blue-50 text-blue-600 font-medium'
-                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    ? 'bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 font-medium'
+                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                 )}
                 title={collapsed ? item.label : undefined}
               >
@@ -101,7 +120,7 @@ export function Sidebar() {
           {isAdmin && (
             <>
               {!collapsed && (
-                <p className="px-3 py-2 mt-4 text-xs font-semibold text-gray-500 uppercase">
+                <p className="px-3 py-2 mt-4 text-xs font-semibold text-muted-foreground uppercase">
                   Administration
                 </p>
               )}
@@ -112,11 +131,12 @@ export function Sidebar() {
                   <Link
                     key={item.href}
                     href={item.href}
+                    onClick={() => onClose?.()}
                     className={cn(
                       'flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors',
                       isActive
-                        ? 'bg-blue-50 text-blue-600 font-medium'
-                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                        ? 'bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 font-medium'
+                        : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                     )}
                     title={collapsed ? item.label : undefined}
                   >
@@ -133,15 +153,15 @@ export function Sidebar() {
         {!collapsed && user && (
           <div className="border-t p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-blue-600 font-medium">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 font-medium">
                 {user.employee?.firstName?.[0]}
                 {user.employee?.lastName?.[0]}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">
+                <p className="text-sm font-medium text-foreground truncate">
                   {user.employee?.firstName} {user.employee?.lastName}
                 </p>
-                <p className="text-xs text-gray-500 truncate">{user.role}</p>
+                <p className="text-xs text-muted-foreground truncate">{user.role}</p>
               </div>
             </div>
           </div>

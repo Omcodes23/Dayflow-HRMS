@@ -42,7 +42,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div
@@ -58,7 +58,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           sidebarOpen ? 'block' : 'hidden'
         )}
       >
-        <Sidebar />
+        <Sidebar onClose={() => setSidebarOpen(false)} />
       </div>
 
       {/* Main content */}

@@ -9,7 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import {
   Clock,
   Calendar,
-  DollarSign,
+  IndianRupee,
   Users,
   TrendingUp,
   CheckCircle2,
@@ -20,6 +20,7 @@ import {
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
+import { formatINR } from '@/lib/utils/currency';
 
 function StatCard({
   title,
@@ -37,10 +38,10 @@ function StatCard({
   color?: 'blue' | 'green' | 'yellow' | 'purple';
 }) {
   const colors = {
-    blue: 'bg-blue-50 text-blue-600',
-    green: 'bg-green-50 text-green-600',
-    yellow: 'bg-yellow-50 text-yellow-600',
-    purple: 'bg-purple-50 text-purple-600',
+    blue: 'bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400',
+    green: 'bg-green-50 dark:bg-green-950 text-green-600 dark:text-green-400',
+    yellow: 'bg-yellow-50 dark:bg-yellow-950 text-yellow-600 dark:text-yellow-400',
+    purple: 'bg-purple-50 dark:bg-purple-950 text-purple-600 dark:text-purple-400',
   };
 
   return (
@@ -48,14 +49,14 @@ function StatCard({
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-500">{title}</p>
-            <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
-            {description && <p className="text-sm text-gray-500 mt-1">{description}</p>}
+            <p className="text-sm font-medium text-muted-foreground">{title}</p>
+            <p className="text-2xl font-bold text-foreground mt-1">{value}</p>
+            {description && <p className="text-sm text-muted-foreground mt-1">{description}</p>}
             {trend && (
               <div className="flex items-center gap-1 mt-2">
                 <TrendingUp className="h-4 w-4 text-green-500" />
-                <span className="text-sm text-green-600">+{trend.value}%</span>
-                <span className="text-sm text-gray-500">{trend.label}</span>
+                <span className="text-sm text-green-600 dark:text-green-400">+{trend.value}%</span>
+                <span className="text-sm text-muted-foreground">{trend.label}</span>
               </div>
             )}
           </div>
@@ -76,12 +77,12 @@ function LeaveBalanceCard({ balance }: { balance: { leaveType: string; remaining
   return (
     <div className="flex items-center justify-between py-3 border-b last:border-0">
       <div>
-        <p className="font-medium text-gray-900">{balance.leaveType}</p>
-        <p className="text-sm text-gray-500">
+        <p className="font-medium text-foreground">{balance.leaveType}</p>
+        <p className="text-sm text-muted-foreground">
           {balance.remaining} of {balance.totalAllocated} days left
         </p>
       </div>
-      <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
+      <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
         <div className={`h-full ${colorClass}`} style={{ width: `${percentage}%` }} />
       </div>
     </div>
@@ -149,8 +150,8 @@ export default function DashboardPage() {
       {/* Page Header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-500">Overview of your HR activities</p>
+          <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
+          <p className="text-muted-foreground">Overview of your HR activities</p>
         </div>
         <div className="flex items-center gap-2">
           {!todayAttendance?.checkIn ? (
@@ -278,9 +279,9 @@ export default function DashboardPage() {
           />
           <StatCard
             title="Monthly Payroll"
-            value={`$${adminStats.payroll.totalGross.toLocaleString()}`}
+            value={formatINR(adminStats.payroll.totalGross)}
             description={`${adminStats.payroll.employeesCount} employees`}
-            icon={DollarSign}
+            icon={IndianRupee}
             color="purple"
           />
         </div>
@@ -377,7 +378,7 @@ export default function DashboardPage() {
               </Link>
               <Link href="/payroll">
                 <Button variant="outline" className="w-full justify-start h-auto py-4">
-                  <DollarSign className="mr-2 h-5 w-5 text-purple-600" />
+                  <IndianRupee className="mr-2 h-5 w-5 text-purple-600" />
                   <div className="text-left">
                     <p className="font-medium">Payroll</p>
                     <p className="text-xs text-gray-500">View salary</p>

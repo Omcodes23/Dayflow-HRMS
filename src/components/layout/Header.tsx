@@ -16,6 +16,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { LogOut, User, Settings, Menu } from 'lucide-react';
 import { toast } from 'sonner';
 import { NotificationBell } from '@/components/shared/NotificationBell';
+import { ThemeToggle } from '@/components/shared/ThemeToggle';
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -48,16 +49,16 @@ export function Header({ onMenuClick }: HeaderProps) {
     : 'U';
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-white px-4 lg:px-6">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" className="lg:hidden" onClick={onMenuClick}>
+    <header className="sticky top-0 z-30 flex h-14 sm:h-16 items-center justify-between border-b bg-background px-3 sm:px-4 lg:px-6">
+      <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+        <Button variant="ghost" size="icon" className="lg:hidden flex-shrink-0" onClick={onMenuClick}>
           <Menu className="h-5 w-5" />
         </Button>
-        <div>
-          <h1 className="text-lg font-semibold text-gray-900">
+        <div className="min-w-0">
+          <h1 className="text-sm sm:text-lg font-semibold text-foreground truncate">
             Welcome back, {user?.employee?.firstName || 'User'}!
           </h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">
             {new Date().toLocaleDateString('en-US', {
               weekday: 'long',
               year: 'numeric',
@@ -68,24 +69,27 @@ export function Header({ onMenuClick }: HeaderProps) {
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+        {/* Theme Toggle */}
+        <ThemeToggle />
+        
         {/* Notifications */}
         <NotificationBell />
 
         {/* User menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="flex items-center gap-2 px-2">
-              <Avatar className="h-8 w-8">
-                <AvatarFallback className="bg-blue-100 text-blue-600 text-sm font-medium">
+            <Button variant="ghost" className="flex items-center gap-2 px-1 sm:px-2">
+              <Avatar className="h-7 w-7 sm:h-8 sm:w-8">
+                <AvatarFallback className="bg-blue-100 text-blue-600 text-xs sm:text-sm font-medium">
                   {initials}
                 </AvatarFallback>
               </Avatar>
               <div className="hidden md:block text-left">
-                <p className="text-sm font-medium">
+                <p className="text-sm font-medium text-foreground">
                   {user?.employee?.firstName} {user?.employee?.lastName}
                 </p>
-                <p className="text-xs text-gray-500">{user?.role}</p>
+                <p className="text-xs text-muted-foreground">{user?.role}</p>
               </div>
             </Button>
           </DropdownMenuTrigger>

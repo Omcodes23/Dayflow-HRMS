@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
+import { RoleGuard } from '@/components/auth/RoleGuard';
 import {
   Table,
   TableBody,
@@ -36,19 +37,19 @@ import { toast } from 'sonner';
 import { format } from 'date-fns';
 
 const statusColors: Record<string, string> = {
-  PENDING: 'bg-yellow-100 text-yellow-700',
-  APPROVED: 'bg-green-100 text-green-700',
-  REJECTED: 'bg-red-100 text-red-700',
-  CANCELLED: 'bg-gray-100 text-gray-700',
+  PENDING: 'bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300',
+  APPROVED: 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300',
+  REJECTED: 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300',
+  CANCELLED: 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300',
 };
 
 const leaveTypeColors: Record<string, string> = {
-  PAID: 'bg-blue-100 text-blue-700',
-  SICK: 'bg-red-100 text-red-700',
-  CASUAL: 'bg-purple-100 text-purple-700',
-  UNPAID: 'bg-gray-100 text-gray-700',
-  MATERNITY: 'bg-pink-100 text-pink-700',
-  PATERNITY: 'bg-teal-100 text-teal-700',
+  PAID: 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300',
+  SICK: 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300',
+  CASUAL: 'bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300',
+  UNPAID: 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300',
+  MATERNITY: 'bg-pink-100 dark:bg-pink-900 text-pink-700 dark:text-pink-300',
+  PATERNITY: 'bg-teal-100 dark:bg-teal-900 text-teal-700 dark:text-teal-300',
 };
 
 type LeaveRequest = {
@@ -71,7 +72,7 @@ type LeaveRequest = {
   };
 };
 
-export default function AdminLeavesPage() {
+function AdminLeavesContent() {
   const [selectedLeave, setSelectedLeave] = useState<LeaveRequest | null>(null);
   const [reviewAction, setReviewAction] = useState<'APPROVED' | 'REJECTED'>('APPROVED');
   const [reviewComment, setReviewComment] = useState('');
@@ -376,5 +377,13 @@ export default function AdminLeavesPage() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+export default function AdminLeavesPage() {
+  return (
+    <RoleGuard allowedRoles={['ADMIN', 'HR']}>
+      <AdminLeavesContent />
+    </RoleGuard>
   );
 }

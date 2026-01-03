@@ -19,7 +19,7 @@ import {
   Calendar,
   Clock,
   TrendingUp,
-  DollarSign,
+  IndianRupee,
   BarChart3,
   PieChart,
   Download,
@@ -31,6 +31,7 @@ import {
 } from 'lucide-react';
 import { format, subMonths, startOfMonth, endOfMonth } from 'date-fns';
 import { motion } from 'framer-motion';
+import { formatINR } from '@/lib/utils/currency';
 
 export default function AdminReportsPage() {
   const [selectedPeriod, setSelectedPeriod] = useState('current-month');
@@ -124,40 +125,40 @@ export default function AdminReportsPage() {
 
       {/* Quick Stats */}
       <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 border-blue-200 dark:border-blue-800">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-blue-700 font-medium">Total Employees</p>
-                <h3 className="text-3xl font-bold text-blue-800 mt-1">{stats?.totalEmployees || 0}</h3>
+                <p className="text-sm text-blue-700 dark:text-blue-300 font-medium">Total Employees</p>
+                <h3 className="text-3xl font-bold text-blue-800 dark:text-blue-200 mt-1">{stats?.totalEmployees || 0}</h3>
               </div>
-              <div className="h-12 w-12 bg-blue-200 rounded-xl flex items-center justify-center">
-                <Users className="h-6 w-6 text-blue-700" />
+              <div className="h-12 w-12 bg-blue-200 dark:bg-blue-800 rounded-xl flex items-center justify-center">
+                <Users className="h-6 w-6 text-blue-700 dark:text-blue-300" />
               </div>
             </div>
             <div className="mt-4 flex items-center gap-2">
-              <Badge variant="secondary" className="bg-green-100 text-green-800">
+              <Badge variant="secondary" className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
                 +{stats?.newHiresThisMonth || 0} this month
               </Badge>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+        <Card className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900 border-green-200 dark:border-green-800">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-green-700 font-medium">Attendance Rate</p>
-                <h3 className="text-3xl font-bold text-green-800 mt-1">{stats?.attendanceRate || 0}%</h3>
+                <p className="text-sm text-green-700 dark:text-green-300 font-medium">Attendance Rate</p>
+                <h3 className="text-3xl font-bold text-green-800 dark:text-green-200 mt-1">{stats?.attendanceRate || 0}%</h3>
               </div>
-              <div className="h-12 w-12 bg-green-200 rounded-xl flex items-center justify-center">
-                <CheckCircle2 className="h-6 w-6 text-green-700" />
+              <div className="h-12 w-12 bg-green-200 dark:bg-green-800 rounded-xl flex items-center justify-center">
+                <CheckCircle2 className="h-6 w-6 text-green-700 dark:text-green-300" />
               </div>
             </div>
             <div className="mt-4">
-              <div className="w-full h-2 bg-green-200 rounded-full">
+              <div className="w-full h-2 bg-green-200 dark:bg-green-800 rounded-full">
                 <div 
-                  className="h-full bg-green-600 rounded-full transition-all" 
+                  className="h-full bg-green-600 dark:bg-green-400 rounded-full transition-all" 
                   style={{ width: `${stats?.attendanceRate || 0}%` }}
                 />
               </div>
@@ -165,41 +166,41 @@ export default function AdminReportsPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+        <Card className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-950 dark:to-orange-900 border-orange-200 dark:border-orange-800">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-orange-700 font-medium">Pending Leaves</p>
-                <h3 className="text-3xl font-bold text-orange-800 mt-1">{stats?.pendingLeaves || 0}</h3>
+                <p className="text-sm text-orange-700 dark:text-orange-300 font-medium">Pending Leaves</p>
+                <h3 className="text-3xl font-bold text-orange-800 dark:text-orange-200 mt-1">{stats?.pendingLeaves || 0}</h3>
               </div>
-              <div className="h-12 w-12 bg-orange-200 rounded-xl flex items-center justify-center">
-                <AlertTriangle className="h-6 w-6 text-orange-700" />
+              <div className="h-12 w-12 bg-orange-200 dark:bg-orange-800 rounded-xl flex items-center justify-center">
+                <AlertTriangle className="h-6 w-6 text-orange-700 dark:text-orange-300" />
               </div>
             </div>
             <div className="mt-4 flex items-center gap-2">
-              <span className="text-sm text-orange-700">
+              <span className="text-sm text-orange-700 dark:text-orange-300">
                 {stats?.onLeaveEmployees || 0} currently on leave
               </span>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900 border-purple-200 dark:border-purple-800">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-purple-700 font-medium">Monthly Payroll</p>
-                <h3 className="text-3xl font-bold text-purple-800 mt-1">
-                  ${stats.totalPayroll?.toLocaleString() || '0'}
+                <p className="text-sm text-purple-700 dark:text-purple-300 font-medium">Monthly Payroll</p>
+                <h3 className="text-3xl font-bold text-purple-800 dark:text-purple-200 mt-1">
+                  {formatINR(stats?.totalPayroll || 0)}
                 </h3>
               </div>
-              <div className="h-12 w-12 bg-purple-200 rounded-xl flex items-center justify-center">
-                <DollarSign className="h-6 w-6 text-purple-700" />
+              <div className="h-12 w-12 bg-purple-200 dark:bg-purple-800 rounded-xl flex items-center justify-center">
+                <IndianRupee className="h-6 w-6 text-purple-700 dark:text-purple-300" />
               </div>
             </div>
             <div className="mt-4 flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-purple-600" />
-              <span className="text-sm text-purple-700">Total compensation</span>
+              <TrendingUp className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+              <span className="text-sm text-purple-700 dark:text-purple-300">Total compensation</span>
             </div>
           </CardContent>
         </Card>
@@ -450,42 +451,42 @@ export default function AdminReportsPage() {
 
           <TabsContent value="payroll" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Card className="bg-gradient-to-br from-green-50 to-green-100">
+              <Card className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-green-700">Total Gross</p>
-                      <h3 className="text-2xl font-bold text-green-800">
-                        ${((stats.totalPayroll || 0) * 1.3).toLocaleString()}
+                      <p className="text-sm text-green-700 dark:text-green-300">Total Gross</p>
+                      <h3 className="text-2xl font-bold text-green-800 dark:text-green-200">
+                        {formatINR((stats?.totalPayroll || 0) * 1.3)}
                       </h3>
                     </div>
-                    <DollarSign className="h-8 w-8 text-green-600" />
+                    <IndianRupee className="h-8 w-8 text-green-600 dark:text-green-400" />
                   </div>
                 </CardContent>
               </Card>
-              <Card className="bg-gradient-to-br from-red-50 to-red-100">
+              <Card className="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950 dark:to-red-900">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-red-700">Total Deductions</p>
-                      <h3 className="text-2xl font-bold text-red-800">
-                        ${((stats.totalPayroll || 0) * 0.3).toLocaleString()}
+                      <p className="text-sm text-red-700 dark:text-red-300">Total Deductions</p>
+                      <h3 className="text-2xl font-bold text-red-800 dark:text-red-200">
+                        {formatINR((stats?.totalPayroll || 0) * 0.3)}
                       </h3>
                     </div>
-                    <XCircle className="h-8 w-8 text-red-600" />
+                    <XCircle className="h-8 w-8 text-red-600 dark:text-red-400" />
                   </div>
                 </CardContent>
               </Card>
-              <Card className="bg-gradient-to-br from-blue-50 to-blue-100">
+              <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-blue-700">Net Payroll</p>
-                      <h3 className="text-2xl font-bold text-blue-800">
-                        ${(stats.totalPayroll || 0).toLocaleString()}
+                      <p className="text-sm text-blue-700 dark:text-blue-300">Net Payroll</p>
+                      <h3 className="text-2xl font-bold text-blue-800 dark:text-blue-200">
+                        {formatINR(stats?.totalPayroll || 0)}
                       </h3>
                     </div>
-                    <TrendingUp className="h-8 w-8 text-blue-600" />
+                    <TrendingUp className="h-8 w-8 text-blue-600 dark:text-blue-400" />
                   </div>
                 </CardContent>
               </Card>
@@ -516,7 +517,7 @@ export default function AdminReportsPage() {
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="font-bold">${deptPayroll.toLocaleString()}</p>
+                          <p className="font-bold">{formatINR(deptPayroll)}</p>
                           <p className="text-sm text-muted-foreground">
                             {((deptPayroll / (stats.totalPayroll || 1)) * 100).toFixed(1)}% of total
                           </p>
